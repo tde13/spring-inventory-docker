@@ -1,16 +1,57 @@
-# spring-inventory-docker
-spring-inventory-docker is a microservice responsible for managing the inventory or stock levels of products in the system. This service tracks the available quantity of each product in stock and provides real-time data to ensure that the correct amount of inventory is available for orders. It interacts with the product catalog, ensuring that inventory levels are updated when products are sold or restocked.
+# Inventory Service – spring-inventory-docker
 
-## It exposes APIs for:
+## Overview
 
-- Checking inventory levels: For any given product, the inventory service returns the available quantity.
+The Inventory Service is responsible for tracking the availability of products in the supply chain management system. It manages the stock levels of each product and ensures that inventory data remains consistent and accurate during operations such as stock updates and order placement.
 
-- Updating inventory levels: When an order is placed, the inventory service can be updated by reducing the stock based on the quantity ordered.
+This service relies on the existence of valid products (retrieved from the Product Service) and interacts with the Order Service to validate and update inventory during the order lifecycle. The service is containerized with Docker and uses a dedicated MySQL database for persistence.
 
-## Key features:
+---
 
-- Managing the available quantity of each product.
+## Features
 
-- Updating the inventory when an order is placed.
+- Maintains available stock for products.
+- CRUD operations for managing inventory records.
+- Ensures each product has at most one inventory record (uniqueness enforced).
+- Rejects inventory entries for non-existent products.
+- Provides endpoints to retrieve and update inventory quantities.
+- Supports inter-service validation during order placement.
 
-- Providing APIs to check and update the available quantity for a product.
+---
+
+## Architecture & Design
+
+The Inventory Service follows the **database-per-service** pattern and uses a dedicated MySQL database (`inventorydb`). It is connected to both a private Docker network for internal DB communication and a shared Docker network (`spring-shared-network`) for REST communication with other services.
+
+This design ensures data isolation while enabling service interoperability.
+
+---
+
+## Technologies Used
+
+- Java 17
+- Spring Boot
+- Spring Web
+- Spring Data JPA
+- MySQL
+- Docker
+
+---
+
+## Environment Variables
+
+Set the following when running the container:
+
+- `MYSQL_HOST` – Hostname of the MySQL container (e.g., `mysqldb1`)
+- `MYSQL_PORT` – MySQL port (default: `3306`)
+- `MYSQL_USER` – MySQL username (e.g., `root`)
+- `MYSQL_PASSWORD` – MySQL password (e.g., `123456`)
+
+---
+
+## Docker Usage
+
+### Build the Docker Image
+
+```bash
+docker build -t spring-inventory-docker .
